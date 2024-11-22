@@ -25,7 +25,7 @@ public class LevelLoader : MonoBehaviour
         //    SceneManager.LoadScene("Fase1");
         //}
         //se pressionar qualquer tecla
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             //mudarcena
             StartCoroutine(CarregarFase("Fase1"));
