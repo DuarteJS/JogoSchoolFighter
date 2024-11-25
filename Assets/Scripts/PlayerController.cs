@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -20,14 +21,21 @@ public class PlayerController : MonoBehaviour
     //Player olhando para a direita.
     private bool playerFacingRight = true;
 
+    //variavel contadora (soco)
+    public int punchCount;
+
+    //tempo de ataque (f=float)
+    private float timeCross = 1.20f;
+
+    private bool comboControl;
 
     void Start()
     {
-       //obtem e inicializa as propriedades do RigidBody2D;
+        //obtem e inicializa as propriedades do RigidBody2D;
         playerRigibody = GetComponent<Rigidbody2D>();
 
         //obtem e inicializa as propriedades do animator
-        playerAnimator = GetComponent<Animator>();  
+        playerAnimator = GetComponent<Animator>();
 
     }
 
@@ -37,6 +45,49 @@ public class PlayerController : MonoBehaviour
         PlayerMove();
         //para ser mais rapido por isso usamos o Update.
         UpdateAnimator();
+
+        
+
+
+        //jabe
+        //keycode = saber qual tecla pressionou
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            if (isWalking == false)
+            {
+                
+                    
+                if (punchCount < 2)
+                {
+                    //se o isWalking for falso,chame playerJab.
+                    PlayerJab();
+                    punchCount++;
+
+                    if (!comboControl)
+                    {
+                        //iniciar o temporizador
+                        StartCoroutine(CrossController());
+                    }
+                }
+                else if (punchCount >= 2)
+                {
+                    PLayerCross();
+                    punchCount = 0;
+                }
+            }
+        }
+        //parando o temporizador
+        StopCoroutine(CrossController());
+
+        ////cross
+        ////keycode = saber qual tecla pressionou
+        //if (Input.GetKeyDown(KeyCode.Z))
+        //{
+        //    if (isWalking == false) {
+        //        PLayerCross();
+        //    }
+
+        //}
 
     }
 
@@ -58,7 +109,7 @@ public class PlayerController : MonoBehaviour
 
         }
         //calculo para a movimentacao do player
-         playerRigibody.MovePosition(playerRigibody.position + playerSpeed * Time.fixedDeltaTime * playerDirection);
+        playerRigibody.MovePosition(playerRigibody.position + playerSpeed * Time.fixedDeltaTime * playerDirection);
 
     }
     //mover o player
@@ -87,7 +138,7 @@ public class PlayerController : MonoBehaviour
         //"isWalking" = animacao da Unity.
         playerAnimator.SetBool("isWalking", isWalking);
 
-        
+
     }
     void Flip()
     {
@@ -100,5 +151,28 @@ public class PlayerController : MonoBehaviour
         //x , y ,z (eixos para trocar na programacao)
         transform.Rotate(0, 180, 0);
     }
-}
+    void PlayerJab()
+    {
+        //acessa a animacao do player
+        playerAnimator.SetTrigger("isJab");
+    }
+
+    //void vai te retornar oque tiver dentro
+    void PLayerCross()
+    {
+        playerAnimator.SetTrigger("isCross");
+
+    }
+
+
+    //corrotina acontece paralelo
+    IEnumerator CrossController()
+    {
+        comboControl = true;
+    yield return new WaitForSeconds(timeCross);
+        punchCount = 0;
+        comboControl = false;
+    }
+        
+ } 
 
