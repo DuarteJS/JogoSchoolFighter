@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
 
     //velocidade
     public float playerSpeed = 1f;
+    public float currentSpeed;
 
     //direcao do player (X,Y)
     public Vector2 playerDirection;
@@ -29,6 +30,10 @@ public class PlayerController : MonoBehaviour
 
     private bool comboControl;
 
+
+    //Indicar se o player esta morto
+    private bool isDead;
+
     void Start()
     {
         //obtem e inicializa as propriedades do RigidBody2D;
@@ -36,6 +41,8 @@ public class PlayerController : MonoBehaviour
 
         //obtem e inicializa as propriedades do animator
         playerAnimator = GetComponent<Animator>();
+
+        currentSpeed = playerSpeed;
 
     }
 
@@ -53,8 +60,8 @@ public class PlayerController : MonoBehaviour
         //keycode = saber qual tecla pressionou
         if (Input.GetKeyDown(KeyCode.X))
         {
-            if (isWalking == false)
-            {
+            //if (isWalking == false)
+            //{
                 
                     
                 if (punchCount < 2)
@@ -74,10 +81,10 @@ public class PlayerController : MonoBehaviour
                     PLayerCross();
                     punchCount = 0;
                 }
-            }
-        }
+            //}
         //parando o temporizador
         StopCoroutine(CrossController());
+        }
 
         ////cross
         ////keycode = saber qual tecla pressionou
@@ -109,7 +116,8 @@ public class PlayerController : MonoBehaviour
 
         }
         //calculo para a movimentacao do player
-        playerRigibody.MovePosition(playerRigibody.position + playerSpeed * Time.fixedDeltaTime * playerDirection);
+        //playerRigibody.MovePosition(playerRigibody.position + playerSpeed * Time.fixedDeltaTime * playerDirection);
+        playerRigibody.MovePosition(playerRigibody.position + currentSpeed * Time.fixedDeltaTime * playerDirection);
 
     }
     //mover o player
@@ -174,5 +182,14 @@ public class PlayerController : MonoBehaviour
         comboControl = false;
     }
         
- } 
+    void ZeroSpeed()
+    {
+        currentSpeed = 0;
+    }
+
+    void ResetSpeed()
+    {
+        currentSpeed = playerSpeed;
+    }
+} 
 
