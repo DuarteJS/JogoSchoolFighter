@@ -1,187 +1,159 @@
+
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
-    //fisica
-    private Rigidbody2D playerRigibody;
+    private Rigidbody2D playerRigidBody;
 
-    //velocidade
-    public float playerSpeed = 1f;
+    public float playerSpeed = 0.6f;
     public float currentSpeed;
 
-    //direcao do player (X,Y)
     public Vector2 playerDirection;
 
-    //animacao de andar
     private bool isWalking;
 
     private Animator playerAnimator;
 
-    //Player olhando para a direita.
+    // Player olhando para a direita
     private bool playerFacingRight = true;
 
-    //variavel contadora (soco)
-    public int punchCount;
+    //Variuavel contadora 
+    private int punchCount;
 
-    //tempo de ataque (f=float)
-    private float timeCross = 1.20f;
+    //Tempo de ataque 
+    private float timeCross = 1.3f;
 
     private bool comboControl;
 
-
-    //Indicar se o player esta morto
+    // Indicar se o Player esta morto
     private bool isDead;
+
+
 
     void Start()
     {
-        //obtem e inicializa as propriedades do RigidBody2D;
-        playerRigibody = GetComponent<Rigidbody2D>();
+        // Obtem e inicializa as propriedades do RigidBody2D
+        playerRigidBody = GetComponent<Rigidbody2D>();
 
-        //obtem e inicializa as propriedades do animator
+        // Obtem e inicializa as propriedades do animator
         playerAnimator = GetComponent<Animator>();
 
         currentSpeed = playerSpeed;
-
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         PlayerMove();
-        //para ser mais rapido por isso usamos o Update.
         UpdateAnimator();
 
-        
-
-
-        //jabe
-        //keycode = saber qual tecla pressionou
         if (Input.GetKeyDown(KeyCode.X))
         {
-            //if (isWalking == false)
-            //{
-                
-                    
-                if (punchCount < 2)
-                {
-                    //se o isWalking for falso,chame playerJab.
-                    PlayerJab();
-                    punchCount++;
 
-                    if (!comboControl)
-                    {
-                        //iniciar o temporizador
-                        StartCoroutine(CrossController());
-                    }
-                }
-                else if (punchCount >= 2)
+
+            //Iniciar o temporizador
+            if (punchCount < 2)
+            {
+
+                PlayerJab();
+                punchCount++;
+
+                if (!comboControl)
                 {
-                    PLayerCross();
-                    punchCount = 0;
+                    StartCoroutine(CrossController());
                 }
-            //}
-        //parando o temporizador
-        StopCoroutine(CrossController());
+
+            }
+
+            else if (punchCount >= 2)
+            {
+
+                PlayerCross();
+                punchCount = 0;
+            }
+
+            //Parando o temporizador 
+            StopCoroutine(CrossController());
         }
-
-        ////cross
-        ////keycode = saber qual tecla pressionou
-        //if (Input.GetKeyDown(KeyCode.Z))
-        //{
-        //    if (isWalking == false) {
-        //        PLayerCross();
-        //    }
-
-        //}
-
     }
 
-    //Fixed Update geralmente e utilizada para implementacao de fisica no jogo,
-    //por ter uma execucao padronizada em diferentes dispositivos.
+    // Fixed Update geralmente é utilizada para implementação de física no jogo
+    // Por ter uma execução padronizada em diferentes dispositivos
     private void FixedUpdate()
     {
-        //Verificar se o player estara em movimento
+        // Verificar se o Player está em movimento
         if (playerDirection.x != 0 || playerDirection.y != 0)
         {
-            //se torna verdadeiro
             isWalking = true;
         }
         else
         {
-            //se torna falso
             isWalking = false;
-
-
         }
-        //calculo para a movimentacao do player
-        //playerRigibody.MovePosition(playerRigibody.position + playerSpeed * Time.fixedDeltaTime * playerDirection);
-        playerRigibody.MovePosition(playerRigibody.position + currentSpeed * Time.fixedDeltaTime * playerDirection);
 
+        // playerRigidBody.MovePosition(playerRigidBody.position + playerSpeed * Time.fixedDeltaTime * playerDirection);
+        playerRigidBody.MovePosition(playerRigidBody.position + currentSpeed * Time.fixedDeltaTime * playerDirection);
     }
-    //mover o player
+
     void PlayerMove()
     {
-        // pega a entrada do jogador,e cria um vector2 para usar o playerDirection;
+        // Pega a entrada do jogador, e cria um Vector2 para usar no playerDirection
         playerDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-        //se o vai se movimentar para a ESQUERDA e estava olhando para a DIREITA
+        // Se o player vai para a ESQUERDA e está olhando para a DIREITA
         if (playerDirection.x < 0 && playerFacingRight)
         {
             Flip();
         }
 
-        //Se o player vai para a DIREITA  e esta olhando para a ESQUERDA
+        // Se o player vai para a DIREITA e está olhando para ESQUERDA
         else if (playerDirection.x > 0 && !playerFacingRight)
         {
             Flip();
         }
-
     }
 
     void UpdateAnimator()
     {
-        // definir o valor do parametro do animator, igual a propriedade isWalking.
-        //"isWalking" = animacao da Unity.
+        // Definir o valor do parâmetro do animator, igual à propriedade isWalking
         playerAnimator.SetBool("isWalking", isWalking);
-
-
     }
+
     void Flip()
     {
-        //Vai girar o sprite player em 180 grau no eixo y
+        // Vai girar o sprite do player em 180º no eixo Y
 
-        //inverter o valor da variavel playerFacingRight
+        // Inverter o valor da variável playerfacingRight
         playerFacingRight = !playerFacingRight;
 
-        //girar o sprite do player em 180 graus no eixo y
-        //x , y ,z (eixos para trocar na programacao)
+        // Girar o sprite do player em 180º no eixo Y
+        // X, Y, Z
         transform.Rotate(0, 180, 0);
     }
+
+
     void PlayerJab()
     {
-        //acessa a animacao do player
+        //Acessa a animação do JAb
+        //Ativa o gatilho de ataque Jab
         playerAnimator.SetTrigger("isJab");
     }
 
-    //void vai te retornar oque tiver dentro
-    void PLayerCross()
+    void PlayerCross()
     {
         playerAnimator.SetTrigger("isCross");
-
     }
-
-
-    //corrotina acontece paralelo
     IEnumerator CrossController()
     {
         comboControl = true;
-    yield return new WaitForSeconds(timeCross);
+
+        yield return new WaitForSeconds(timeCross);
         punchCount = 0;
+
         comboControl = false;
     }
-        
+
     void ZeroSpeed()
     {
         currentSpeed = 0;
@@ -191,5 +163,4 @@ public class PlayerController : MonoBehaviour
     {
         currentSpeed = playerSpeed;
     }
-} 
-
+}
