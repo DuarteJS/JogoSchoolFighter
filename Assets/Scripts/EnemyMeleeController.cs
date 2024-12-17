@@ -1,5 +1,5 @@
+
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class EnemyMeleeController : MonoBehaviour
 {
@@ -19,6 +19,7 @@ public class EnemyMeleeController : MonoBehaviour
     // Variaveis para movimentação do inimigo
     private float enemySpeed = 0.3f;
     private float currentSpeed;
+    public Sprite enemyImage;
 
     private bool isWalking;
 
@@ -49,7 +50,7 @@ public class EnemyMeleeController : MonoBehaviour
         // Buscar o Player e armazenar sua posição
         target = FindAnyObjectByType<PlayerController>().transform;
 
-        // Inicializar a velocidade do inimigo
+        // Incializar a velocidade do inimigo
         currentSpeed = enemySpeed;
 
         // Inicializar a vida do inimigo
@@ -183,6 +184,9 @@ public class EnemyMeleeController : MonoBehaviour
 
             animator.SetTrigger("HitDamage");
 
+            // Atualiza a UI do inimigo
+            FindFirstObjectByType<UIManager>().UpdateEnemyUI(maxHealth, currentHealth, enemyImage);
+
             if (currentHealth <= 0)
             {
                 isDead = true;
@@ -204,9 +208,10 @@ public class EnemyMeleeController : MonoBehaviour
         currentSpeed = enemySpeed;
     }
 
+    // Para a fazer o inimigo morrer de fato
     public void DisableEnemy()
     {
-        // Desabilita este inimigo
+        // Desabilita o inimigo
         this.gameObject.SetActive(false);
     }
 }
